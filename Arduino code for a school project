@@ -1,0 +1,218 @@
+/////////OLED area 
+#include <Adafruit_GFX.h> //The Adafruit_GFX library provides a common syntax and set of graphics functions for all of our LCD and OLED displays.( AKA X en X placement by pixels on the monitor.)
+#include <Adafruit_SPITFT.h>
+#include <Adafruit_SPITFT_Macros.h>
+#include <gfxfont.h>
+
+#include <Adafruit_GFX.h>
+#include <Adafruit_SPITFT.h>
+#include <Adafruit_SPITFT_Macros.h>
+#include <gfxfont.h>
+
+#include <SPI.h>
+#include <Wire.h>
+
+#include <Adafruit_GFX.h>
+
+#include <Adafruit_SSD1306.h>
+
+#define OLED_RESET 4
+
+Adafruit_SSD1306 display(OLED_RESET);
+
+#define NUMFLAKES 10
+
+#define XPOS 0
+
+#define YPOS 1
+
+#define DELTAY 2
+
+#define LOGO16_GLCD_HEIGHT 16
+
+#define LOGO16_GLCD_WIDTH 16
+
+static const unsigned char PROGMEM logo16_glcd_bmp[] = { B00000000, B11000000, B00000001, B11000000, B00000001, B11000000, B00000011, B11100000, B11110011, B11100000, B11111110, B11111000, B01111110, B11111111, B00110011, B10011111, B00011111, B11111100, B00001101, B01110000, B00011011, B10100000, B00111111, B11100000, B00111111, B11110000, B01111100, B11110000, B01110000, B01110000, B00000000, B00110000 };
+
+#if (SSD1306_LCDHEIGHT != 64) //The height of the screen I had to change this in the ardafruit library file.
+
+#error("Height incorrect, please fix Adafruit_SSD1306.h!"); //A eror warning that will display if the height of the screen is inorrect in the seperate file. 
+#endif
+
+int PressurePin = A0;     // the Foce Sensitive Resistor is connected to ANALOG A0
+int force;     //is to know how hard the force is on the FSR
+int LEDpin = 10; //Pin on arduino the LED is connected to 
+
+
+void setup() {
+
+  pinMode (12,OUTPUT);
+  pinMode (LEDpin, OUTPUT);
+
+Serial.begin(9600); //displays that the oled monitor is working on the seriele monitor
+
+display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (D was here before which I changed to C to make it work.) 
+Show image buffer on the display hardware.
+display.display(); //delay(2000);   // Makes the drawing command visible on screen.
+You MUST call display() after
+
+display.setTextSize(6.5); // Size for text of display.println
+
+display.setTextColor(WHITE);
+
+display.setCursor(10, 2); //Position of icons of println (1,2) 1 = horizontal 2 = vertical
+
+display.clearDisplay(); //Clears the display 
+
+display.println("-w-"); //What is displayed on the screen
+
+// invert the display
+
+display.invertDisplay(true);
+
+display.invertDisplay(false);
+
+display.display(); // update display with all of the above graphics
+
+display.clearDisplay();  //Means all pixels are off (clears the buffer)
+}
+
+
+
+
+
+void loop() {
+
+
+while (1) {
+
+display.setTextSize(6.5); //Size of what ever is displayed in "PrintIn"
+
+display.setTextColor(WHITE);
+
+display.setCursor(10, 2); //position of icons of "println" (1,2) 1 = horizontal 2 = vertical ((orignal was 10,0))
+
+
+display.clearDisplay();
+
+display.println("0w0"); //What is displayed on the screen
+
+
+
+printText();
+
+display.display(); // update display with all of the above graphics
+
+}
+
+}
+
+void printText(void) {
+
+String s;
+
+if (Serial.available()) {
+
+s = Serial.readString(); //getting string input in variable "s"
+
+display.println(s);
+
+display.display(); // update display with all of the above graphics
+
+display.println("\n");
+
+} 
+ 
+
+
+/////////Force sensitive resistor area 
+
+ force = analogRead(PressurePin); // Sets force as analog data from the FSR
+ Serial.println(force); //print data for troubleshooting 
+ if (force > 500)
+ {
+  digitalWrite(LEDpin, HIGH); //HIGH means LED ON
+  }
+    else
+  {
+  digitalWrite(LEDpin, LOW); //LOW means LED OFF
+  }
+  delay(100);
+
+
+
+/////////PIEZO buzzer area 
+
+
+  tone(12,349); //F - 1
+  delay(450);
+
+  tone(12,523); //C5 - 2
+  delay(450);
+
+  tone(12,698); //F5 - 3
+  delay(900);
+
+  tone(12,880); //A5 - 4 
+  delay(900);
+
+  tone(12,349  ); //F - 5
+  delay(900);
+
+  tone(12,880); //A5 - 6
+  delay(900);
+
+  tone(12,349); //F - 7
+  delay(900);
+
+
+  //
+ 
+  tone(12,880); //A5 - 4 
+  delay(900);
+
+  
+  tone(12,698); //F5 - 3
+  delay(900);
+
+  //
+
+  tone(12,340); //E4 -8
+  delay(450);
+
+  tone(12,494); //B4 - 9  | 3/9 same lenght 
+  delay(450);
+
+  
+  tone(12,659); //E5 - 10 
+  delay(900);
+
+  tone(12,784); //G5 - 11  // 10/11 same as 1/2
+  delay(900);
+
+  tone(12,659); //E5 - 12
+  delay(900);
+
+  tone(12,784); //G5 - 13
+  delay(900);
+
+  tone(12,659); //E5 - 14
+  delay(900);
+
+  tone(12,988); //B5 - 15
+  delay(225);
+      
+  tone(12,1046); //C6 - 16 // 12/ 16 same lenght 
+  delay(225);
+  
+  tone(12,988); //B5 - 17
+  delay(450);
+
+  tone(12,784); //G5 - 18
+  delay(450);
+
+  tone(12,880); //A5 -19 
+  delay(450);
+
+  
+  }
